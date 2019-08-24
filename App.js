@@ -1,6 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Platform } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Platform, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function App() {
@@ -37,16 +36,36 @@ export default function App() {
 				</TouchableOpacity>
 			</View>
 			<View style={styles.alignRow}>
-				<Text>Nickname</Text>
+				<TextInput style={styles.inputRow} placeholder="Nickname" />
 			</View>
 			<View style={styles.alignRow}>
-				<Text>Password</Text>
+				<TextInput style={styles.inputRow} placeholder="Password" />
 			</View>
 			<View style={styles.alignRow}>
-				<Text>Btn</Text>
+				<TouchableOpacity style={styles.btn}>
+					<Text
+						style={{
+							color: '#fff',
+							fontSize: 14,
+							fontWeight: 'bold'
+						}}
+					>
+						Sign Up
+					</Text>
+				</TouchableOpacity>
 			</View>
-			<View style={styles.alignRow}>
-				<Text>Log In</Text>
+			<View style={styles.alignRowLogin}>
+				<Text>Already have account?</Text>
+				<TouchableOpacity>
+					<Text
+						style={{
+							paddingHorizontal: 5,
+							color: '#4169e1'
+						}}
+					>
+						Log In
+					</Text>
+				</TouchableOpacity>
 			</View>
 		</SafeAreaView>
 	);
@@ -62,6 +81,14 @@ const styles = StyleSheet.create({
 	alignRow: {
 		flex: 1,
 		justifyContent: 'center',
+		paddingLeft: 40,
+		paddingRight: 40
+	},
+	alignRowLogin: {
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'flex-start',
 		paddingLeft: 40,
 		paddingRight: 40
 	},
@@ -91,5 +118,18 @@ const styles = StyleSheet.create({
 		marginLeft: 40,
 		fontSize: 30,
 		color: '#4169e1'
+	},
+	inputRow: {
+		padding: 20,
+		borderWidth: 1,
+		borderRadius: 5,
+		borderColor: '#ccc'
+	},
+	btn: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 25,
+		borderRadius: 10,
+		backgroundColor: '#4169e1'
 	}
 });
