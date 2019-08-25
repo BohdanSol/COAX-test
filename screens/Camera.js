@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Platform } from 'react-native';
+import { Text, View, TouchableOpacity, Platform, Image } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { Ionicons } from '@expo/vector-icons';
 import { Camera } from 'expo-camera';
@@ -7,17 +7,35 @@ import { Camera } from 'expo-camera';
 export default class CameraExample extends React.Component {
 	state = {
 		hasCameraPermission: null,
-		type: Camera.Constants.Type.back
+		type: Camera.Constants.Type.back,
+		previewUri: undefined
 	};
 
 	async componentDidMount() {
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
 		this.setState({ hasCameraPermission: status === 'granted' });
 	}
-
+	snap = async () => {
+		if (this.camera) {
+			let photo = await this.camera.takePictureAsync({ base64: true });
+			this.setState({ previewUri: photo.uri });
+			alert(this.state.previewUri);
+		}
+	};
 	render() {
 		const { goBack } = this.props.navigation;
 		const { hasCameraPermission } = this.state;
+		if (this.state.previewUri) {
+			return (
+				<View style={{ flex: 1 }}>
+					<View style={{ flex: 1 }} />
+					<View style={{ flex: 3, backgroundColor: '#ccc' }}>
+						<Image source={{ uri: this.state.previewUri }} />
+					</View>
+					<View style={{ flex: 1 }} />
+				</View>
+			);
+		}
 		if (hasCameraPermission === null) {
 			return <View />;
 		} else if (hasCameraPermission === false) {
@@ -30,7 +48,13 @@ export default class CameraExample extends React.Component {
 							<Text>Back</Text>
 						</TouchableOpacity>
 					</View>
-					<Camera style={{ flex: 3 }} type={this.state.type}>
+					<Camera
+						ref={(ref) => {
+							this.camera = ref;
+						}}
+						style={{ flex: 3 }}
+						type={this.state.type}
+					>
 						<View
 							style={{
 								flex: 1,
@@ -62,6 +86,7 @@ export default class CameraExample extends React.Component {
 					</Camera>
 					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 						<TouchableOpacity
+							onPress={this.snap}
 							style={{
 								width: 60,
 								height: 60,
