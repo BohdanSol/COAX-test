@@ -1,9 +1,16 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Platform, TextInput } from 'react-native';
+import { SafeAreaView, Image, StyleSheet, Text, View, TouchableOpacity, Platform, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
 
 export class Signup extends React.Component {
+	state = {
+		image: null
+	};
 	render() {
+		let { image } = this.state;
 		const { navigate } = this.props.navigation;
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: '#f3f3f3' }}>
@@ -27,14 +34,21 @@ export class Signup extends React.Component {
 						justifyContent: 'flex-start'
 					}}
 				>
-					<TouchableOpacity style={styles.photoPicker}>
-						<Text style={{ color: '#ccc' }}>Photo</Text>
+					<Image source={{ uri: image }} style={styles.photoPicker} />
+
+					<TouchableOpacity>
+						<Ionicons
+							onPress={() => navigate('Camera')}
+							name={`${Platform.OS === 'ios' ? 'ios' : 'md'}-camera`}
+							style={styles.pickIcon}
+						/>
 					</TouchableOpacity>
 					<TouchableOpacity>
-						<Ionicons name={`${Platform.OS === 'ios' ? 'ios' : 'md'}-camera`} style={styles.pickIcon} />
-					</TouchableOpacity>
-					<TouchableOpacity>
-						<Ionicons name={`${Platform.OS === 'ios' ? 'ios' : 'md'}-image`} style={styles.pickIcon} />
+						<Ionicons
+							onPress={this._pickImage}
+							name={`${Platform.OS === 'ios' ? 'ios' : 'md'}-image`}
+							style={styles.pickIcon}
+						/>
 					</TouchableOpacity>
 				</View>
 				<View style={styles.alignRow}>
@@ -72,6 +86,30 @@ export class Signup extends React.Component {
 			</SafeAreaView>
 		);
 	}
+	componentDidMount() {
+		this.getPermissionAsync();
+	}
+	getPermissionAsync = async () => {
+		if (Constants.platform.ios) {
+			const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+			if (status !== 'granted') {
+				alert('Sorry, we need camera roll permissions to make this work!');
+			}
+		}
+	};
+	_pickImage = async () => {
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.All,
+			allowsEditing: true,
+			aspect: [ 4, 3 ]
+		});
+
+		console.log(result);
+
+		if (!result.cancelled) {
+			this.setState({ image: result.uri });
+		}
+	};
 }
 export default Signup;
 
@@ -106,15 +144,6 @@ const styles = StyleSheet.create({
 		width: 120,
 		borderRadius: 60,
 		backgroundColor: '#eee',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 3
-		},
-		shadowOpacity: 0.15,
-		shadowRadius: 4.65,
-
-		elevation: 5,
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
