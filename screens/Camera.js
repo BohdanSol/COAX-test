@@ -19,7 +19,7 @@ export default class CameraExample extends React.Component {
 		if (this.camera) {
 			let photo = await this.camera.takePictureAsync({
 				quality: 0.5,
-				base64: true,
+				base64: false,
 				forceUpOrientation: true,
 				fixOrientation: true
 			});
@@ -34,13 +34,12 @@ export default class CameraExample extends React.Component {
 			return (
 				<View style={{ flex: 1 }}>
 					<View style={{ flex: 1 }} />
-					<View style={{ flex: 3, backgroundColor: '#ccc' }}>
+					<View style={{ flex: 3 }}>
 						<Image
 							stlye={{ width: 70, height: 70 }}
 							resizeMode="cover"
 							source={{ uri: this.state.previewUri }}
 						/>
-						<Image source={require('../assets/icon.png')} />
 					</View>
 					<View
 						style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
