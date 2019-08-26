@@ -1,24 +1,58 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Platform, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 export class Feed extends React.Component {
+	state = {
+		nick: this.props.navigation.state.params.nickname,
+		isLoading: true,
+		dataSource: []
+	};
+	componentDidMount() {
+		fetch('https://jsonplaceholder.typicode.com/posts').then((response) => response.json()).then((responseJson) => {
+			this.setState({
+				isLoading: false,
+				dataSource: responseJson
+			});
+		});
+	}
+	renderItem = ({ item }) => (
+		<TouchableOpacity style={styles.wholePost}>
+			<Text style={styles.itemHeader}>{item.title}</Text>
+			<Text style={styles.itemBody}>{item.body}</Text>
+		</TouchableOpacity>
+	);
 	render() {
-		return (
-			<SafeAreaView style={{ flex: 1, backgroundColor: '#f3f3f3' }}>
-				<View style={styles.headerRow}>
-					<Text
-						style={{
-							color: '#4169E1',
-							fontSize: 40,
-							fontWeight: 'bold'
-						}}
-					>
-						Feed
-					</Text>
+		if (this.state.isLoading) {
+			return (
+				<View style={styles.container}>
+					<ActivityIndicator size="large" animating />
 				</View>
-			</SafeAreaView>
-		);
+			);
+		} else {
+			return (
+				<SafeAreaView style={{ flex: 1, backgroundColor: '#f3f3f3' }}>
+					<View style={styles.headerRow}>
+						<Text
+							style={{
+								color: '#4169E1',
+								fontSize: 40,
+								fontWeight: 'bold'
+							}}
+						>
+							Feed
+						</Text>
+						<Text style={{ marginRight: 40 }}>User: {this.state.nick ? this.state.nick : 'Anonymous'}</Text>
+					</View>
+					<View style={{ flex: 6 }}>
+						<FlatList
+							data={this.state.dataSource}
+							renderItem={this.renderItem}
+							keyExtractor={(item, index) => index.toString()}
+						/>
+					</View>
+				</SafeAreaView>
+			);
+		}
 	}
 }
 export default Feed;
@@ -30,58 +64,29 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
-	alignRow: {
-		flex: 1,
-		justifyContent: 'center',
-		paddingLeft: 40,
-		paddingRight: 40
-	},
-	alignRowLogin: {
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'flex-start',
-		paddingLeft: 40,
-		paddingRight: 40
-	},
 	headerRow: {
 		flex: 1,
-		justifyContent: 'center',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
 		marginLeft: 40
 	},
-	photoPicker: {
-		height: 120,
-		width: 120,
-		borderRadius: 60,
-		backgroundColor: '#eee',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 3
-		},
-		shadowOpacity: 0.15,
-		shadowRadius: 4.65,
-
-		elevation: 5,
-		alignItems: 'center',
-		justifyContent: 'center'
+	itemHeader: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		marginBottom: 2,
+		padding: 10
 	},
-	pickIcon: {
-		marginLeft: 40,
-		fontSize: 30,
-		color: '#4169e1'
+	itemBody: {
+		color: '#555',
+		paddingHorizontal: 10,
+		paddingBottom: 10
 	},
-	inputRow: {
-		padding: 20,
+	wholePost: {
+		margin: 10,
 		borderWidth: 1,
-		borderRadius: 5,
-		borderColor: '#ccc'
-	},
-	btn: {
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 25,
 		borderRadius: 10,
-		backgroundColor: '#4169e1'
+		borderColor: '#ccc',
+		backgroundColor: '#ededed'
 	}
 });

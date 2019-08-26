@@ -8,7 +8,7 @@ export default class CameraExample extends React.Component {
 	state = {
 		hasCameraPermission: null,
 		type: Camera.Constants.Type.back,
-		previewUri: undefined
+		previewUri: null
 	};
 
 	async componentDidMount() {
@@ -17,7 +17,12 @@ export default class CameraExample extends React.Component {
 	}
 	snap = async () => {
 		if (this.camera) {
-			let photo = await this.camera.takePictureAsync({ base64: true });
+			let photo = await this.camera.takePictureAsync({
+				quality: 0.5,
+				base64: true,
+				forceUpOrientation: true,
+				fixOrientation: true
+			});
 			this.setState({ previewUri: photo.uri });
 			alert(this.state.previewUri);
 		}
@@ -30,9 +35,23 @@ export default class CameraExample extends React.Component {
 				<View style={{ flex: 1 }}>
 					<View style={{ flex: 1 }} />
 					<View style={{ flex: 3, backgroundColor: '#ccc' }}>
-						<Image source={{ uri: this.state.previewUri }} />
+						<Image
+							stlye={{ width: 70, height: 70 }}
+							resizeMode="cover"
+							source={{ uri: this.state.previewUri }}
+						/>
+						<Image source={require('../assets/icon.png')} />
 					</View>
-					<View style={{ flex: 1 }} />
+					<View
+						style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+					>
+						<TouchableOpacity style={{ padding: 20 }} onPress={() => (this.state.previewUri = null)}>
+							<Text style={{ fontSize: 18 }}>Cancel</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={{ padding: 20 }} onPress={() => alert(this.state.previewUri)}>
+							<Text style={{ fontSize: 18 }}>Save to CRoll</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			);
 		}

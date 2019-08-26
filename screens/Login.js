@@ -3,6 +3,12 @@ import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Platform, TextI
 import { Ionicons } from '@expo/vector-icons';
 
 export class Login extends React.Component {
+	state = {
+		nickname: ''
+	};
+	handleChangeText = (typedText) => {
+		this.setState({ nickname: typedText });
+	};
 	render() {
 		const { navigate } = this.props.navigation;
 		return (
@@ -19,13 +25,21 @@ export class Login extends React.Component {
 					</Text>
 				</View>
 				<View style={styles.alignRow}>
-					<TextInput style={styles.inputRow} placeholder="Nickname" />
+					<TextInput
+						onChangeText={this.handleChangeText}
+						style={styles.inputRow}
+						placeholder="Nickname"
+						value={this.state.nickname}
+					/>
 				</View>
 				<View style={styles.alignRow}>
 					<TextInput style={styles.inputRow} placeholder="Password" secureTextEntry={true} />
 				</View>
 				<View style={styles.alignRow}>
-					<TouchableOpacity style={styles.btn}>
+					<TouchableOpacity
+						style={styles.btn}
+						onPress={() => navigate('Feed', { nickname: this.state.nickname })}
+					>
 						<Text
 							style={{
 								color: '#fff',
